@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="overlay-for-dialog" class="clearfix"></div>
+    <!-- alert用のダイアログ -->
+    <div id="alert-message" class="dialog" >
+      <div class="alert-content">
+        <p id="alert-message-text"></p>
+      </div>
+      <p id="alert-close" type="button">閉じる</p>
+    </div>
+    <!-- confirm用のダイアログ -->
+    <div id="confirm-message" class="dialog">
+      <div class="confirm-content">
+        <p id="confirm-message-text"></p>
+      </div>
+      <div style="text-align: center;">
+        <p id="confirm-yes" type="button" >はい</p>
+        <p id="confirm-no" type="button" >いいえ</p>
+      </div>
+    </div>
+
+    <script>        
+      // alert用ダイアログの処理
+      const alertClose = document.getElementById('alert-close');
+      const alertDialog = document.getElementById('alert-message');
+      const alertMessage = document.getElementById('alert-message-text');
+
+      /**
+        * アラートを表示する関数
+        * @param {string}   _message     表示するメッセージ
+        * @param {function} resolveParam 「閉じる」ボタンをクリックした際に実行される関数
+        */
+      function showAlert(message, resolveParam) {
+        return new Promise(function(resolve) {
+        alertMessage.innerText = message;
+        enableOverlayForDialog();
+        alertDialog.style.display = 'block';
+        const closeFnc = function() {
+          alertClose.removeEventListener('click', closeFnc);
+          disableOverlayForDialog();
+          alertDialog.style.display = 'none';
+          alertMessage.innerText = '';
+          resolve(resolveParam);
+        }
+        alertClose.addEventListener('click', closeFnc);
+        });
+      };
+
+      // confirm用ダイアログの処理
+      var confirmMessage = document.getElementById('confirm-message-text');
+      var confirmDialog = document.getElementById('confirm-message');
+      var yesBtn = document.getElementById('confirm-yes');
+      var noBtn = document.getElementById('confirm-no');
+
+      /**
+       * 「はい」ボタンと「いいえ」ボタン付きのダイアログを表示する関数
+       * @param {string}   _message       表示するメッセージ
+       * @param {object}   resolveParam   「はい」ボタンをクリックした際に実行される関数のパラメーター
+       */
+      function showConfirm(_message, resolveParam) {
+        return new Promise(function(resolve, reject) {
+          confirmMessage.innerText = _message;
+          enableOverlayForDialog();
+          confirmDialog.style.display = 'block';
+          // ダイアログを閉じる処理
+          var closeConfirm = function() {
+            yesBtn.removeEventListener('click', _yesfunc);
+            noBtn.removeEventListener('click', _noFunc);
+            disableOverlayForDialog();
+            confirmDialog.style.display = 'none';
+            confirmMessage.innerText = '';
+          }
+          // はいボタンを作成する
+          var _yesfunc = function() {
+            closeConfirm();
+            resolve(resolveParam);
+          };
+          yesBtn.addEventListener('click', _yesfunc);
+          // いいえボタンを作成する
+          var _noFunc = function() {
+            closeConfirm();
+            reject();
+          };
+          noBtn.addEventListener('click', _noFunc);
+        });
+      };
+
+      /**
+        * ダイアログのオーバーレイを有効化する関数
+        */
+      function enableOverlayForDialog() {
+        document.getElementById('overlay-for-dialog').style.background = 'rgba(0, 0, 0, 0.3)';
+        document.getElementById('overlay-for-dialog').style.display = 'block'; 
+      }
+
+      /**
+        * ダイアログのオーバーレイを無効化する関数
+        */
+      function disableOverlayForDialog() {
+        document.getElementById('overlay-for-dialog').style.background = 'transparent';
+        document.getElementById('overlay-for-dialog').style.display = 'none'; 
+      }
+    </script>
+  </body>
+</html>

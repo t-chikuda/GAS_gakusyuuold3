@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <?!= HtmlService.createHtmlOutputFromFile("alert").getContent(); ?>
+    <?!= HtmlService.createHtmlOutputFromFile("style").getContent(); ?>
+    <h1>入力画面</h1>
+
+    <table border="1" style="border-collapse: collapse">
+      <tr>
+        <td colspan="2">１</p></td>
+        <td colspan="2">２</p></td>
+        <td colspan="2">３</p></td>
+        <td colspan="2">４</p></td>
+        <td colspan="2">５</p></td>
+        <td colspan="2">６</p></td>
+        <td colspan="2">７</p></td>
+        <td colspan="2">８</p></td>
+        <td colspan="2">９</p></td>
+        <td colspan="3">１０</p></td>
+      </tr>
+      <tr>
+        <td><p id="displayThrow11"></p></td>
+        <td><p id="displayThrow12"></p></td>
+        <td><p id="displayThrow21"></p></td>
+        <td><p id="displayThrow22"></p></td>
+        <td><p id="displayThrow31"></p></td>
+        <td><p id="displayThrow32"></p></td>
+        <td><p id="displayThrow41"></p></td>
+        <td><p id="displayThrow42"></p></td>
+        <td><p id="displayThrow51"></p></td>
+        <td><p id="displayThrow52"></p></td>
+        <td><p id="displayThrow61"></p></td>
+        <td><p id="displayThrow62"></p></td>
+        <td><p id="displayThrow71"></p></td>
+        <td><p id="displayThrow72"></p></td>
+        <td><p id="displayThrow81"></p></td>
+        <td><p id="displayThrow82"></p></td>
+        <td><p id="displayThrow91"></p></td>
+        <td><p id="displayThrow92"></p></td>
+        <td><p id="displayThrow101"></p></td>
+        <td><p id="displayThrow102"></p></td>
+        <td><p id="displayThrow103"></p></td>
+      </tr>
+      <tr>
+        <td colspan="2"><p id="displaySum1"></p></td>
+        <td colspan="2"><p id="displaySum2"></p></td>
+        <td colspan="2"><p id="displaySum3"></p></td>
+        <td colspan="2"><p id="displaySum4"></p></td>
+        <td colspan="2"><p id="displaySum5"></p></td>
+        <td colspan="2"><p id="displaySum6"></p></td>
+        <td colspan="2"><p id="displaySum7"></p></td>
+        <td colspan="2"><p id="displaySum8"></p></td>
+        <td colspan="2"><p id="displaySum9"></p></td>
+        <td colspan="3"><p id="displaySum10"></p></td>
+      </tr>
+    </table>
+    <div class="numberOfDefeated">倒した本数:<input type="text" id="numberOfDefeated"></div>
+    <div>ガター、ミスの場合は0を入力してください。</div>
+    <div>
+      <button class="input" id="input" onclick="input()">入力</button>
+    </div>
+    <div>
+      <button class="end" id="end" onclick="end()">終了</button>
+    </div>
+
+    <input type="hidden" id="hiddenThrow11">
+    <input type="hidden" id="hiddenThrow12">
+    <input type="hidden" id="hiddenThrow21">
+    <input type="hidden" id="hiddenThrow22">
+    <input type="hidden" id="hiddenThrow31">
+    <input type="hidden" id="hiddenThrow32">
+    <input type="hidden" id="hiddenThrow41">
+    <input type="hidden" id="hiddenThrow42">
+    <input type="hidden" id="hiddenThrow51">
+    <input type="hidden" id="hiddenThrow52">
+    <input type="hidden" id="hiddenThrow61">
+    <input type="hidden" id="hiddenThrow62">
+    <input type="hidden" id="hiddenThrow71">
+    <input type="hidden" id="hiddenThrow72">
+    <input type="hidden" id="hiddenThrow81">
+    <input type="hidden" id="hiddenThrow82">
+    <input type="hidden" id="hiddenThrow91">
+    <input type="hidden" id="hiddenThrow92">
+    <input type="hidden" id="hiddenThrow101">
+    <input type="hidden" id="hiddenThrow102">
+    <input type="hidden" id="hiddenThrow103">
+
+    <input type="hidden" id="hiddenSum0">
+    <input type="hidden" id="hiddenSum1">
+    <input type="hidden" id="hiddenSum2">
+    <input type="hidden" id="hiddenSum3">
+    <input type="hidden" id="hiddenSum4">
+    <input type="hidden" id="hiddenSum5">
+    <input type="hidden" id="hiddenSum6">
+    <input type="hidden" id="hiddenSum7">
+    <input type="hidden" id="hiddenSum8">
+    <input type="hidden" id="hiddenSum9">
+    <input type="hidden" id="hiddenSum10">
+
+    <script>
+      // 現在のフレーム数
+      let numberOfFrames = 1;
+
+      /**
+       * 入力処理の関数です
+       */
+      function input() {
+        const strNumberOfFrames = String(numberOfFrames);
+        const displayThrow1 = "displayThrow" + strNumberOfFrames + "1";
+        const displayThrow2 = "displayThrow" + strNumberOfFrames + "2";
+        const displayThrow3 = "displayThrow" + strNumberOfFrames + "3";
+        const hiddenThrow1 = "hiddenThrow" + strNumberOfFrames + "1";
+        const hiddenThrow2 = "hiddenThrow" + strNumberOfFrames + "2";
+        const hiddenThrow3 = "hiddenThrow" + strNumberOfFrames + "3";
+        const lastDisplayThrow2 = "displayThrow" + Number(numberOfFrames - 1) + "2";
+        const displaySum = "displaySum" + strNumberOfFrames;
+        const hiddenSum = "hiddenSum" + strNumberOfFrames;
+        const lastHiddenSum = "hiddenSum" + Number(numberOfFrames - 1);
+        const lastLastHiddenSum = "hiddenSum" + Number(numberOfFrames - 2);
+        const hiddenInput = document.getElementById("numberOfDefeated").value;
+        let displayInput;
+        let strikeFlag = false;
+        let spareFlag = false;
+        let firstThrowFlag = false;
+        let secondThrowFlag = false;
+        let thirdThrowFlag = false;
+
+        // 入力チェック
+        // 数字かのチェック
+        if (isNaN(hiddenInput)) {
+          showAlert("数字を入力してください");
+          return;
+        }
+        // 0～10かのチェック
+        if (hiddenInput < 0 || 10 < hiddenInput) {
+          showAlert("0～10を入力してください");
+          return;
+        }
+        // 1投目と2投目が10を超えないかのチェック
+        if (numberOfFrames !== 10){
+          if (document.getElementById(hiddenThrow1).value !== "" && document.getElementById(hiddenThrow2).value === "" && Number(document.getElementById(hiddenThrow1).value) + Number(document.getElementById("numberOfDefeated").value) >= 11){
+            showAlert("10を超えています");
+            return;
+          }
+        } else if (numberOfFrames === 10) {
+          if (document.getElementById(displayThrow1).innerText !== "✕" && document.getElementById(hiddenThrow1).value !== "" && document.getElementById(hiddenThrow2).value === "" && Number(document.getElementById(hiddenThrow1).value) + Number(document.getElementById("numberOfDefeated").value) >= 11){
+            showAlert("10を超えています");
+            return;
+          } else if (document.getElementById(displayThrow2).innerText !== "／" && document.getElementById(displayThrow2).innerText !== "✕" && document.getElementById(hiddenThrow1).value !== "" && document.getElementById(hiddenThrow2).value !== "" && Number(document.getElementById(hiddenThrow2).value) + Number(document.getElementById("numberOfDefeated").value) >= 11){
+            showAlert("10を超えています");
+            return;
+          }
+        }
+
+        if (document.getElementById(displayThrow2).innerText !== "／" && document.getElementById(hiddenThrow1).value !== "" && document.getElementById(hiddenThrow2).value !== "" && Number(document.getElementById(hiddenThrow2).value) + Number(document.getElementById("numberOfDefeated").value) === 10){
+          displayInput = "／"
+          spareFlag = true;
+        } else if (document.getElementById(displayThrow2).innerText !== "／" && document.getElementById(hiddenThrow1).value !== "" && document.getElementById(hiddenThrow2).value === "" && Number(document.getElementById(hiddenThrow1).value) + Number(document.getElementById("numberOfDefeated").value) === 10){
+          displayInput = "／"
+          spareFlag = true;
+        } else if (document.getElementById("numberOfDefeated").value === "10") {
+          displayInput = "✕"
+          strikeFlag = true;
+        } else {
+          displayInput = document.getElementById("numberOfDefeated").value;          
+        }
+        
+        // 1投目
+        if (document.getElementById(hiddenThrow1).value === "") {
+          firstThrowFlag = true;
+          inputThrow(displayThrow1, displayInput, hiddenThrow1, hiddenInput);       
+          // 連続ストライクの処理
+          if (strikeFlag === true && numberOfFrames >= 3 && document.getElementById(lastLastHiddenSum).value === "") {
+            console.log("連続ストライク処理");
+            lastInputSum2();
+          }
+          // ストライク⇒ストライク⇒ストライク以外の処理
+          if (strikeFlag === false && numberOfFrames >= 3 && document.getElementById(lastHiddenSum).value === "" && document.getElementById(lastDisplayThrow2).innerText !== "／") {
+            console.log("ストライク⇒ストライク⇒ストライク以外の処理");
+            lastInputSum3(hiddenThrow1);
+          }
+          // スペアの後の処理
+          if (numberOfFrames >= 2) {
+            if (document.getElementById(lastDisplayThrow2).innerText === "／") {    
+              console.log("スペアの後の処理");
+              lastInputSum4(hiddenThrow1);
+            }
+          }   
+        // 2投目
+        } else if (document.getElementById(hiddenThrow2).value === "") {
+          secondThrowFlag = true;
+          inputThrow(displayThrow2, displayInput, hiddenThrow2, hiddenInput);
+
+          // ストライク後の処理
+          if (numberOfFrames >= 2 && document.getElementById(lastHiddenSum).value === "") {
+            console.log("ストライク後の処理");
+            lastInputSum1(hiddenThrow1, hiddenThrow2);
+          }
+
+          // inputSum(hiddenThrow1, hiddenThrow2, 0, lastHiddenSum, displaySum, hiddenSum)
+          // 10フレーム目以外
+          if (numberOfFrames !== 10 && spareFlag === false) {
+            inputSum(hiddenThrow1, hiddenThrow2, 0, lastHiddenSum, displaySum, hiddenSum);
+          // 10フレーム目
+          } else if (numberOfFrames === 10) {
+            if (Number(document.getElementById(hiddenThrow1).value) + Number(document.getElementById(hiddenThrow2).value) < 10 && numberOfFrames === 10) {
+              inputSum(hiddenThrow1, hiddenThrow2, 0, lastHiddenSum, displaySum, hiddenSum);
+              gameSet();
+            }
+          }
+        // 3投目
+        } else if (Number(document.getElementById(hiddenThrow1).value) + Number(document.getElementById(hiddenThrow2).value) >= 10 && numberOfFrames === 10) {
+          thirdThrowFlag = true;
+          inputThrow(displayThrow3, displayInput, hiddenThrow3, hiddenInput);
+          inputSum(hiddenThrow1, hiddenThrow2, hiddenThrow3, lastHiddenSum, displaySum, hiddenSum);
+          gameSet();
+        }
+        if(strikeFlag === true && numberOfFrames !== 10) {
+          numberOfFrames ++;
+        }
+        if(secondThrowFlag === true && numberOfFrames !== 10) {
+          numberOfFrames ++;
+        }
+        document.getElementById("numberOfDefeated").value = "";
+      }
+    
+      /**
+       * 投球毎の表示用関数です
+       * displayThrow 表示用のid
+       * displayInput 表示用の内容
+       * hiddenThrow 非表示用のid
+       * hiddenInput 非表示用の内容
+       */
+      function inputThrow(displayThrow, displayInput, hiddenThrow, hiddenInput) {
+        document.getElementById(displayThrow).innerText = displayInput;
+        document.getElementById(hiddenThrow).value = hiddenInput;
+      }  
+
+      /**
+       * 合計の表示用関数です
+       * hiddenThrow1 1投目の本数
+       * hiddenThrow2 2投目の本数
+       * hiddenThrow3 3投目の本数
+       * lastHiddenSum 1フレーム前の合計
+       * displaySum 表示用の合計
+       * hiddenSum 合計非表示用のid
+       */
+      function inputSum(hiddenThrow1, hiddenThrow2, hiddenThrow3, lastHiddenSum, displaySum, hiddenSum) {
+        let sum;
+        if (hiddenThrow3 === 0) {
+          sum = Number(document.getElementById(hiddenThrow1).value) + Number(document.getElementById(hiddenThrow2).value) + Number(document.getElementById(lastHiddenSum).value);          
+        } else {
+          sum = Number(document.getElementById(hiddenThrow1).value) + Number(document.getElementById(hiddenThrow2).value) + Number(document.getElementById(hiddenThrow3).value) + Number(document.getElementById(lastHiddenSum).value);
+        }
+        document.getElementById(displaySum).innerText = sum;
+        document.getElementById(hiddenSum).value = sum;
+      } 
+
+      /**
+       * ストライク後の関数です
+       * hiddenThrow1 1投目の本数
+       * hiddenThrow2 2投目の本数
+       */ 
+      function lastInputSum1(hiddenThrow1, hiddenThrow2) {
+        const lastDisplaySum = "displaySum" + Number(numberOfFrames - 1);
+        const lastHiddenSum = "hiddenSum" + Number(numberOfFrames - 1);
+        const lastLastHiddenSum = "hiddenSum" + Number(numberOfFrames - 2);
+        let sum;
+        if (numberOfFrames === 2) {
+          sum = Number(document.getElementById(hiddenThrow1).value)  + Number(document.getElementById(hiddenThrow2).value) + 10;
+        } else {
+          sum = Number(document.getElementById(hiddenThrow1).value)  + Number(document.getElementById(hiddenThrow2).value) + Number(document.getElementById(lastLastHiddenSum).value) + 10;
+        }
+        document.getElementById(lastDisplaySum).innerText = sum;
+        document.getElementById(lastHiddenSum).value = sum; 
+      }
+
+      /**
+       * 連続ストライクの関数です
+       */ 
+      function lastInputSum2() {
+        const lastLastDisplaySum = "displaySum" + Number(numberOfFrames - 2);
+        const lastHiddenSum = "hiddenSum" + Number(numberOfFrames - 1);
+        const lastLastHiddenSum = "hiddenSum" + Number(numberOfFrames - 2);
+        const lastLastLastHiddenSum = "hiddenSum" + Number(numberOfFrames - 3);
+        let sum;
+        if (numberOfFrames === 3) {
+          sum = 30;
+        } else if (numberOfFrames >= 4 && document.getElementById(lastHiddenSum).value === "" && document.getElementById(lastLastHiddenSum).value === ""){
+          sum = Number(document.getElementById(lastLastLastHiddenSum).value) + 30;
+        }
+        document.getElementById(lastLastDisplaySum).innerText = sum;
+        document.getElementById(lastLastHiddenSum).value = sum;
+      }
+
+      /**
+       * ストライク⇒ストライク⇒ストライク以外の関数です
+       * hiddenThrow1 1投目の本数
+       */ 
+      function lastInputSum3(hiddenThrow1) {
+        const lastLastDisplaySum = "displaySum" + Number(numberOfFrames - 2);
+        const lastLastHiddenSum = "hiddenSum" + Number(numberOfFrames - 2);
+        const lastLastLastHiddenSum = "hiddenSum" + Number(numberOfFrames - 3);
+        const sum = Number(document.getElementById(lastLastLastHiddenSum).value) + Number(document.getElementById(hiddenThrow1).value) + 20;
+        document.getElementById(lastLastDisplaySum).innerText = sum;
+        document.getElementById(lastLastHiddenSum).value = sum;
+      }
+
+      /**
+       * スペア後の関数です
+       * hiddenThrow1 1投目の本数
+       */ 
+      function lastInputSum4(hiddenThrow1) {
+        const lastDisplaySum = "displaySum" + Number(numberOfFrames - 1);
+        const lastHiddenSum = "hiddenSum" + Number(numberOfFrames - 1);
+        const lastLastHiddenSum = "hiddenSum" + Number(numberOfFrames - 2);
+        let sum;
+        if (numberOfFrames === 2) {
+          sum = Number(document.getElementById(hiddenThrow1).value)  + 10;
+        } else {
+          sum = Number(document.getElementById(hiddenThrow1).value)  + Number(document.getElementById(lastLastHiddenSum).value) + 10;
+        }
+        document.getElementById(lastDisplaySum).innerText = sum;
+        document.getElementById(lastHiddenSum).value = sum; 
+      }
+
+      /**
+       * ゲーム終了処理関数です
+       */
+      function gameSet() {
+        document.getElementById("input").disabled = true;
+        showAlert("お疲れさまでした");
+      }  
+
+      /**
+       * 終了処理の関数です
+       */
+      async function end() {
+        var yesFunction = function() {
+          return true;
+        }
+        var noFunction = function() { 
+          return false; 
+        }
+        noFunctionFlg = await showConfirm('終了しますか？').then(yesFunction, noFunction);
+        if(!noFunctionFlg) {
+          return;
+        }
+
+        google.script.run
+        .withSuccessHandler(function(results) {
+            let url = results;
+            url += "?page=index";
+            window.top.location.href = url;
+        })
+        .withFailureHandler(function(error) {
+          showAlert('エラーが発生しました。システム管理者に問い合わせてください。');
+        })
+        .screenTransition();
+      }
+    </script>
+  </body>
+</html>
